@@ -19,11 +19,14 @@ from django.urls import path, include
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
 )
-from core.views import Register
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('',include('core.urls')),
+    path('api/',include('core.urls')),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('register',Register.as_view(),name='register')
 ]

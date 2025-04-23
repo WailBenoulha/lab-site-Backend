@@ -28,3 +28,28 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+class Appointements(models.Model):
+    STATUS_CHOICES = [
+        ('accepted','Accepted'),
+        ('pending','Pending'),
+        ('rejected','Rejected')
+    ]
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)        
+    fullname = models.CharField(max_length=200)
+    date = models.DateField()
+    time = models.TimeField()
+    status = models.CharField(
+        max_length=200,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+
+class Message(models.Model):   
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE) 
+    name = models.CharField(max_length=200) 
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    reply = models.TextField()
+    

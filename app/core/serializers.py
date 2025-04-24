@@ -6,10 +6,9 @@ from rest_framework import serializers
 class RegisterSerializer(ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['fullname','email','password']
+        fields = ['fullname','email','password','role']
         extra_kwargs = {
             'password': {'write_only':True},
-            'role':{'read_only':True},
         }
 
     def create(self, validated_data):

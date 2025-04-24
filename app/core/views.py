@@ -15,7 +15,6 @@ from drf_spectacular.utils import extend_schema
 # The patient can create an account
 class Register(APIView):
     serializer_class = RegisterSerializer
-    permission_classes = [IsAdmin]
 
     def post(self,request):
         serializer = RegisterSerializer(data=request.data)
@@ -71,13 +70,13 @@ class MessagePatient(APIView):
     serializer_class = MessagePatientSerializer
     permission_classes = [IsPatient] 
 
-    # The user can see their messages
+    # The patient can see their messages
     def get(self,request):
         instance = Message.objects.filter(user=request.user)
         serializer = MessagePatientSerializer(instance,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
     
-    # the user send messages to Admin
+    # the patient send messages to Admin
     def post(self,request):
         serializer = MessagePatientSerializer(data=request.data)
         if serializer.is_valid():
@@ -95,7 +94,7 @@ class MessageAdmin(APIView):
         serializer = MessageAdminSerializer(instance,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
     
-    # The admin can reply at the messages of patients by updating the reply from null to a reply message
+    # The admin can reply at the messages of patients by updating the reply field from null to a reply message
     def patch(self,request,pk=None):
         instance = Message.objects.get(pk=pk)
         serializer = MessageAdminSerializer(instance,data=request.data,partial=True)

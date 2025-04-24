@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-g%i39g!#5o7l4p(ia!-$4c=*8!f9mqrrw9uwc!=r$itsi)0h*3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'drf_spectacular_sidecar',
     'rest_framework_simplejwt',
     'core',
+    'corsheaders',
 ]
 
 from datetime import timedelta
@@ -71,13 +72,15 @@ SPECTACULAR_SETTINGS = {
 AUTH_USER_MODEL = "core.CustomUser"
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware", 
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = "app.urls"
@@ -151,3 +154,4 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+CORS_ALLOW_ALL_ORIGINS = True

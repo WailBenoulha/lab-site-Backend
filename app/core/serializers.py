@@ -19,7 +19,17 @@ class RegisterSerializer(ModelSerializer):
 class AppointementSerializer(ModelSerializer):
     class Meta:
         model = Appointements
-        fields = ['fullname','date','time']
+        fields = ['id','fullname','date','time']
         extra_kwargs = {
             'status': {'read_only':True}
+        }
+
+class AppointementStatusSerializer(ModelSerializer):
+    class Meta:
+        model = Appointements
+        fields = ['status']        
+        extra_kwargs = {
+            'fullname':{'read_only':True},
+            'date':{'read_only':True},
+            'time':{'read_only':True}
         }

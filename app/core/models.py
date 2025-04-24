@@ -52,4 +52,3 @@ class Message(models.Model):
     subject = models.CharField(max_length=200)
     message = models.TextField()
     reply = models.TextField()
-    

@@ -1,9 +1,9 @@
 from django.urls import path
-from core.views import Register,list_apointements,request_apointement,accept_request
+from core.views import Register,ListPendingAppointments,request_apointement,AcceptRefuseRequest
 
 urlpatterns = [
     path('register',Register.as_view(),name='register'),
-    path('appointments/', list_apointements, name='list-appointments'),
+    path('appointments/', ListPendingAppointments.as_view(), name='list-appointments'),
     path('appointments/request/', request_apointement, name='request-appointment'),
-    path('appointments/accept/<int:pk>/', accept_request, name='accept-appointment'),
+    path('appointments/request/<int:pk>/',AcceptRefuseRequest.as_view(),name='accept-refuse-appointment')
 ]

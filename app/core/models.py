@@ -51,4 +51,7 @@ class Message(models.Model):
     email = models.EmailField()
     subject = models.CharField(max_length=200)
     message = models.TextField()
-    reply = models.TextField()
+    reply = models.TextField(null=True)
+
+    def __str__(self):
+        return {self.name} - {self.subject}

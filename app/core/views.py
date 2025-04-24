@@ -2,7 +2,9 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import (RegisterSerializer,
                           AppointementSerializer,
-                          AppointementStatusSerializer)
+                          AppointementStatusSerializer,
+                          MessagePatientSerializer,
+                          MessageAdminSerializer)
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Appointements,Message
@@ -47,7 +49,7 @@ def request_apointement(request):
     if serializer.is_valid():
         serializer.save(user=request.user)
         return Response(serializer.data,status=status.HTTP_201_CREATED)    
-    return Response(serializer.data,status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
 # The Admin can accept or refuse the patient appointments by updating the status of request
@@ -62,5 +64,42 @@ class AcceptRefuseRequest(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
-        return Response(serializer.data,status=status.HTTP_400_BAD_REQUEST)
-        
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+
+class MessagePatient(APIView):   
+    serializer_class = MessagePatientSerializer
+    permission_classes = [IsPatient] 
+
+    # The user can see their messages
+    def get(self,request):
+        instance = Message.objects.filter(user=request.user)
+        serializer = MessagePatientSerializer(instance,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+    # the user send messages to Admin
+    def post(self,request):
+        serializer = MessagePatientSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+class MessageAdmin(APIView):
+    serializer_class = MessageAdminSerializer
+    permission_classes = [IsAdmin] 
+
+    # The Admin can see the new messages that he didnt reply yet
+    def get(self,request):
+        instance = Message.objects.filter(reply__isnull=True)
+        serializer = MessageAdminSerializer(instance,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    
+    # The admin can reply at the messages of patients by updating the reply from null to a reply message
+    def patch(self,request,pk=None):
+        instance = Message.objects.get(pk=pk)
+        serializer = MessageAdminSerializer(instance,data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)

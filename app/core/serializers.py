@@ -33,3 +33,23 @@ class AppointementStatusSerializer(ModelSerializer):
             'date':{'read_only':True},
             'time':{'read_only':True}
         }
+
+class MessagePatientSerializer(ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['name','email','subject','message']
+        extra_kwargs = {
+            'reply':{'read_only':True}
+        }
+
+class MessageAdminSerializer(ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['reply']        
+        extra_kwargs = {
+            'user':{'read_only':True},
+            'name':{'read_only':True},
+            'email':{'read_only':True},
+            'subject':{'read_only':True},
+            'message':{'read_only':True}
+        }

@@ -110,7 +110,7 @@ class MessagePatient(APIView):
     
 class MessageAdmin(APIView):
     serializer_class = MessageAdminSerializer
-    permission_classes = [IsAdmin] 
+    permission_classes = [AllowAny] 
 
     # The Admin can see the new messages that he didnt reply yet
     def get(self,request):

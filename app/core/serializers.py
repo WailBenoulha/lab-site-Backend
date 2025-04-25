@@ -45,7 +45,7 @@ class MessagePatientSerializer(ModelSerializer):
 class MessageAdminSerializer(ModelSerializer):
     class Meta:
         model = Message
-        fields = ['reply']        
+        fields = ['id','user','name','email','subject','message','reply']        
         extra_kwargs = {
             'user':{'read_only':True},
             'name':{'read_only':True},

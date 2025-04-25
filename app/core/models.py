@@ -45,6 +45,9 @@ class Appointements(models.Model):
         default='pending'
     )
 
+    def __str__(self):
+        return f"{self.fullname} - {self.date} - {self.time}"
+
 class Message(models.Model):   
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE) 
     name = models.CharField(max_length=200) 

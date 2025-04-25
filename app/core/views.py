@@ -12,6 +12,7 @@ from rest_framework.decorators import api_view,permission_classes
 from .permissions import IsAdmin,IsPatient,IsPremiumPatient,IsPatientOrPremiumPatient
 from drf_spectacular.utils import extend_schema
 from django.db.models import Q
+from rest_framework.permissions import AllowAny
 
 # The patient can create an account
 class Register(APIView):
@@ -37,6 +38,7 @@ class ListUser(APIView):
 # The Admin Can see the panding Request of taking Appointments
 class ListPendingAppointments(APIView):
     serializer_class = AppointementSerializer
+    permission_classes = [AllowAny]
     
     def get(self,request):    
         model = Appointements.objects.filter(status='pending')
@@ -67,15 +69,25 @@ def request_apointement(request):
 
 class AcceptRefuseRequest(APIView):
     serializer_class = AppointementStatusSerializer
-    permission_classes = [IsAdmin]
+    permission_classes = [AllowAny]
 
     def patch(self,request,pk=None):
         instance = Appointements.objects.get(pk=pk)
         serializer = AppointementStatusSerializer(instance,data=request.data,partial=True)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            new_status = serializer.validated_data.get('status')
+            
+            if new_status == 'accepted':
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            
+            elif new_status == 'rejected':
+                instance.delete()
+                return Response({'deleted': 'The request has been rejected and deleted.'}, status=status.HTTP_200_OK)
+            
+            return Response({'error': 'Invalid status value.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class MessagePatient(APIView):   

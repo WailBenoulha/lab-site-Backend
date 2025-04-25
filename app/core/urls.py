@@ -4,7 +4,8 @@ from core.views import (Register,
                         request_apointement,
                         AcceptRefuseRequest,
                         MessagePatient,
-                        MessageAdmin)
+                        MessageAdmin,
+                        ListUser)
 
 urlpatterns = [
     path('register',Register.as_view(),name='register'),
@@ -12,5 +13,6 @@ urlpatterns = [
     path('appointments/request/', request_apointement, name='request-appointment'),
     path('appointments/request/<int:pk>/',AcceptRefuseRequest.as_view(),name='accept-refuse-appointment'),
     path('message/patient/', MessagePatient.as_view(),name='messages-patient'),
-    path('message/admin/', MessageAdmin.as_view(),name='messages-admin')
+    path('message/admin/', MessageAdmin.as_view(),name='messages-admin'),
+    path('users/registered/',ListUser.as_view(),name='users')
 ]

@@ -7,10 +7,11 @@ from .serializers import (RegisterSerializer,
                           MessageAdminSerializer)
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Appointements,Message
+from .models import Appointements,Message,CustomUser
 from rest_framework.decorators import api_view,permission_classes
 from .permissions import IsAdmin,IsPatient,IsPremiumPatient,IsPatientOrPremiumPatient
 from drf_spectacular.utils import extend_schema
+from django.db.models import Q
 
 # The patient can create an account
 class Register(APIView):
@@ -22,6 +23,15 @@ class Register(APIView):
             serializer.save()
             return Response(serializer.data,status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+# The Admin could see the list of registered patients
+class ListUser(APIView):
+    serializer_class = RegisterSerializer
+
+    def get(self,request):
+        instance = CustomUser.objects.filter(Q(role='patient') | Q(role='premium_patient'))
+        serializer = RegisterSerializer(instance,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
 
 # The Admin Can see the panding Request of taking Appointments

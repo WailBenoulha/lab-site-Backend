@@ -53,5 +53,4 @@ class Message(models.Model):
     message = models.TextField()
     reply = models.TextField(null=True)
 
-    def __str__(self):
-        return {self.name} - {self.subject}
+    

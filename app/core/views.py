@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Appointements,Message
 from rest_framework.decorators import api_view,permission_classes
-from .permissions import IsAdmin,IsPatient,IsPremiumPatient
+from .permissions import IsAdmin,IsPatient,IsPremiumPatient,IsPatientOrPremiumPatient
 from drf_spectacular.utils import extend_schema
 
 # The patient can create an account
@@ -39,10 +39,12 @@ class ListPendingAppointments(APIView):
     description="Create a new appointment request (patients only)"
 )
 
+
+
 # The patient can add a request of an appointments
 
 @api_view(['POST'])
-@permission_classes([IsPatient])
+@permission_classes([IsPatientOrPremiumPatient])
 def request_apointement(request):    
     serializer = AppointementSerializer(data=request.data)
     if serializer.is_valid():
@@ -68,7 +70,7 @@ class AcceptRefuseRequest(APIView):
 
 class MessagePatient(APIView):   
     serializer_class = MessagePatientSerializer
-    permission_classes = [IsPatient] 
+    permission_classes = [IsPatientOrPremiumPatient] 
 
     # The patient can see their messages
     def get(self,request):

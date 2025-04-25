@@ -11,3 +11,7 @@ class IsPatient(BasePermission):
 class IsPremiumPatient(BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role == 'premium_patient'    
+
+class IsPatientOrPremiumPatient(BasePermission):
+    def has_permission(self, request, view):
+        return IsPatient().has_permission(request, view) or IsPremiumPatient().has_permission(request, view)

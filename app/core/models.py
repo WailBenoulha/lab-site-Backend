@@ -44,6 +44,7 @@ class Appointements(models.Model):
         choices=STATUS_CHOICES,
         default='pending'
     )
+    notification = models.CharField(null=True,blank=True)
 
     def __str__(self):
         return f"{self.fullname} - {self.date} - {self.time}"

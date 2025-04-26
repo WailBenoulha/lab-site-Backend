@@ -27,17 +27,23 @@ class AppointementSerializer(ModelSerializer):
 class AppointementStatusSerializer(ModelSerializer):
     class Meta:
         model = Appointements
-        fields = ['status']        
+        fields = ['status','notification']        
         extra_kwargs = {
             'fullname':{'read_only':True},
             'date':{'read_only':True},
-            'time':{'read_only':True}
+            'time':{'read_only':True},
+            'notification':{'read_only':True}
         }
+
+class AppointmentNotification(ModelSerializer):
+    class Meta:
+        model = Appointements
+        fields = ['date','time','notification']        
 
 class MessagePatientSerializer(ModelSerializer):
     class Meta:
         model = Message
-        fields = ['name','email','subject','message']
+        fields = ['name','email','subject','message','reply']
         extra_kwargs = {
             'reply':{'read_only':True}
         }

@@ -4,7 +4,8 @@ from .serializers import (RegisterSerializer,
                           AppointementSerializer,
                           AppointementStatusSerializer,
                           MessagePatientSerializer,
-                          MessageAdminSerializer)
+                          MessageAdminSerializer,
+                          AppointmentNotification)
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Appointements,Message,CustomUser
@@ -78,7 +79,7 @@ class AcceptRefuseRequest(APIView):
             new_status = serializer.validated_data.get('status')
             
             if new_status == 'accepted':
-                serializer.save()
+                serializer.save(notification='Your request of appointment are accepted! see you soon!')
                 return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
             
             elif new_status == 'rejected':
@@ -89,6 +90,14 @@ class AcceptRefuseRequest(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class ListAcceptedRequest(APIView):
+    serializer_class = AppointmentNotification
+    permission_classes = [IsPatientOrPremiumPatient]
+
+    def get(self,request):
+        instance = Appointements.objects.filter(user=request.user, status='accepted')
+        serializer = AppointmentNotification(instance,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
 class MessagePatient(APIView):   
     serializer_class = MessagePatientSerializer

@@ -5,7 +5,8 @@ from .serializers import (RegisterSerializer,
                           AppointementStatusSerializer,
                           MessagePatientSerializer,
                           MessageAdminSerializer,
-                          AppointmentNotification)
+                          AppointmentNotification,
+                          CustomTokenObtainPairSerializer)
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Appointements,Message,CustomUser
@@ -14,6 +15,11 @@ from .permissions import IsAdmin,IsPatient,IsPremiumPatient,IsPatientOrPremiumPa
 from drf_spectacular.utils import extend_schema
 from django.db.models import Q
 from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+# The user can login
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 # The patient can create an account
 class Register(APIView):

@@ -2,6 +2,25 @@ from rest_framework.serializers import ModelSerializer
 from .models import CustomUser,Appointements,Message
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['role'] = user.role if hasattr(user, 'role') else 'user'
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        # Add extra fields to response
+        data['role'] = self.user.role if hasattr(self.user, 'role') else 'user'
+        return data
+
 
 class RegisterSerializer(ModelSerializer):
     class Meta:

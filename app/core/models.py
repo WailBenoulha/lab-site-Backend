@@ -59,3 +59,34 @@ class Message(models.Model):
 
     def __str__(self):
         return f'{self.name} - {self.user} - {self.subject}'   
+    
+import os
+import joblib
+import numpy as np
+from PIL import Image
+from django.conf import settings
+from django.db import models
+import tensorflow as tf
+
+class ImagePrediction(models.Model):
+    image = models.ImageField(upload_to='uploads/')
+    prediction = models.CharField(max_length=50, blank=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # Save image first
+        self.prediction = self.make_prediction()
+        super().save(update_fields=['prediction'])
+
+    def make_prediction(self):
+        model_path = os.path.join(settings.BASE_DIR, 'ml_models', 'lab_model.h5')
+        model = tf.keras.models.load_model(model_path)
+
+        image_path = os.path.join(settings.MEDIA_ROOT, self.image.name)
+        img = Image.open(image_path).resize((150, 150)).convert("RGB")  # use RGB if model was trained on 3 channels
+
+        img_array = np.array(img) / 255.0  # Normalize as in training
+        img_array = img_array.reshape((1, 150, 150, 3))  # Shape: (1, 150, 150, 3)
+
+        pred = model.predict(img_array)[0][0]  # Binary prediction
+
+        return "Normal" if pred > 0.5 else "Abnormal"

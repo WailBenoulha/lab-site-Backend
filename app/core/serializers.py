@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import CustomUser,Appointements,Message
+from .models import CustomUser,Appointements,Message,ImagePrediction
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -78,3 +78,9 @@ class MessageAdminSerializer(ModelSerializer):
             'subject':{'read_only':True},
             'message':{'read_only':True}
         }
+
+class ImagePredictionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImagePrediction
+        fields = ['id', 'image', 'prediction']
+        read_only_fields = ['prediction']

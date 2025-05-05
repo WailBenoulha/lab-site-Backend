@@ -6,16 +6,18 @@ from .serializers import (RegisterSerializer,
                           MessagePatientSerializer,
                           MessageAdminSerializer,
                           AppointmentNotification,
-                          CustomTokenObtainPairSerializer)
+                          CustomTokenObtainPairSerializer,
+                          ImagePredictionSerializer)
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Appointements,Message,CustomUser
+from .models import Appointements,Message,CustomUser,ImagePrediction
 from rest_framework.decorators import api_view,permission_classes
 from .permissions import IsAdmin,IsPatient,IsPremiumPatient,IsPatientOrPremiumPatient
 from drf_spectacular.utils import extend_schema
 from django.db.models import Q
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework import generics
 
 # The user can login
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -35,6 +37,7 @@ class Register(APIView):
 # The Admin could see the list of registered patients
 class ListUser(APIView):
     serializer_class = RegisterSerializer
+    permission_classes =[IsAdmin]
 
     def get(self,request):
         instance = CustomUser.objects.filter(Q(role='patient') | Q(role='premium_patient'))
@@ -45,7 +48,7 @@ class ListUser(APIView):
 # The Admin Can see the panding Request of taking Appointments
 class ListPendingAppointments(APIView):
     serializer_class = AppointementSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdmin]
     
     def get(self,request):    
         model = Appointements.objects.filter(status='pending')
@@ -76,7 +79,7 @@ def request_apointement(request):
 
 class AcceptRefuseRequest(APIView):
     serializer_class = AppointementStatusSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdmin]
 
     def patch(self,request,pk=None):
         instance = Appointements.objects.get(pk=pk)
@@ -125,7 +128,7 @@ class MessagePatient(APIView):
     
 class MessageAdmin(APIView):
     serializer_class = MessageAdminSerializer
-    permission_classes = [AllowAny] 
+    permission_classes = [IsAdmin] 
 
     # The Admin can see the new messages that he didnt reply yet
     def get(self,request):
@@ -141,3 +144,9 @@ class MessageAdmin(APIView):
             serializer.save()
             return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+
+# The Patient can see the result of his Xray photo
+class ImagePredictionCreateView(generics.CreateAPIView):
+    queryset = ImagePrediction.objects.all()
+    serializer_class = ImagePredictionSerializer

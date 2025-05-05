@@ -6,7 +6,8 @@ from core.views import (Register,
                         MessagePatient,
                         MessageAdmin,
                         ListUser,
-                        ListAcceptedRequest)
+                        ListAcceptedRequest,
+                        ImagePredictionCreateView)
 
 urlpatterns = [
     path('register',Register.as_view(),name='register'),
@@ -17,5 +18,6 @@ urlpatterns = [
     path('message/patient/', MessagePatient.as_view(),name='messages-patient'),
     path('message/admin/', MessageAdmin.as_view(),name='messages-admin'),
     path('message/admin/<int:pk>/', MessageAdmin.as_view(),name='messages-admin'),
-    path('users/registered/',ListUser.as_view(),name='users')
+    path('users/registered/',ListUser.as_view(),name='users'),
+    path('image/predictor/', ImagePredictionCreateView.as_view(),name='image-predictor')
 ]

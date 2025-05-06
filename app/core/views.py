@@ -18,6 +18,10 @@ from django.db.models import Q
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
+from django.http import FileResponse
+from .models import ImagePrediction
+from utils.pdf_generator import generate_user_predictions_pdf
+import io
 
 # The user can login
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -150,3 +154,20 @@ class MessageAdmin(APIView):
 class ImagePredictionCreateView(generics.CreateAPIView):
     queryset = ImagePrediction.objects.all()
     serializer_class = ImagePredictionSerializer
+    permission_classes = [IsPatientOrPremiumPatient]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+# The premium patient can download all his prediction results
+class UserPdf(APIView):
+    permission_classes = [IsPremiumPatient]
+
+    def get(self, request):
+        predictions = ImagePrediction.objects.filter(user=request.user).order_by('-datetime')
+        if not predictions.exists():
+            return FileResponse(io.BytesIO(b"No predictions found"), content_type='application/pdf', filename="empty.pdf")
+
+        pdf_buffer = generate_user_predictions_pdf(predictions, request.user.email)
+        return FileResponse(pdf_buffer, as_attachment=True, filename="your_predictions.pdf")

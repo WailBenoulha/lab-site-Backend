@@ -82,5 +82,5 @@ class MessageAdminSerializer(ModelSerializer):
 class ImagePredictionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImagePrediction
-        fields = ['id', 'image', 'prediction']
+        fields = ['id', 'image', 'prediction','datetime']
         read_only_fields = ['prediction']

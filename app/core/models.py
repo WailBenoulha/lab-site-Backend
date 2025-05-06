@@ -69,8 +69,10 @@ from django.db import models
 import tensorflow as tf
 
 class ImagePrediction(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='image_predictions')
     image = models.ImageField(upload_to='uploads/')
     prediction = models.CharField(max_length=50, blank=True, editable=False)
+    datetime = models.DateTimeField(auto_now_add=True,null=True,blank=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # Save image first
@@ -89,4 +91,4 @@ class ImagePrediction(models.Model):
 
         pred = model.predict(img_array)[0][0]  # Binary prediction
 
-        return "Normal" if pred > 0.5 else "Abnormal"
+        return "Normal" if pred > 0.5 else "Anormal"

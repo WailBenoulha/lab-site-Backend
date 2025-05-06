@@ -29,6 +29,7 @@ class RegisterSerializer(ModelSerializer):
         extra_kwargs = {
             'password': {'write_only':True},
             'date_joined': {'read_only':True},
+            'role':{'read_only':True},
         }
 
     def create(self, validated_data):
@@ -84,3 +85,9 @@ class ImagePredictionSerializer(serializers.ModelSerializer):
         model = ImagePrediction
         fields = ['id', 'image', 'prediction','datetime']
         read_only_fields = ['prediction']
+
+class UpgradeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['accountNumber','accountCode']        
+        read_only_fields = ['role']

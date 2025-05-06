@@ -19,6 +19,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=100,choices=ROLE_CHOICES,default='patient')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    accountNumber = models.IntegerField(null=True,blank=True)
+    accountCode = models.IntegerField(null=True,blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
 
     USERNAME_FIELD = "email"

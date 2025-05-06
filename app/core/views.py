@@ -7,7 +7,8 @@ from .serializers import (RegisterSerializer,
                           MessageAdminSerializer,
                           AppointmentNotification,
                           CustomTokenObtainPairSerializer,
-                          ImagePredictionSerializer)
+                          ImagePredictionSerializer,
+                          UpgradeSerializer)
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Appointements,Message,CustomUser,ImagePrediction
@@ -171,3 +172,16 @@ class UserPdf(APIView):
 
         pdf_buffer = generate_user_predictions_pdf(predictions, request.user.email)
         return FileResponse(pdf_buffer, as_attachment=True, filename="your_predictions.pdf")
+
+# The patient can upgrade his profile to premium patient by updating role
+class PremiumUpgrade(APIView):
+    serializer_class = UpgradeSerializer
+    permission_classes = [IsPatient]
+
+    def patch(self,request,pk=None):
+        instance = request.user
+        serializer = UpgradeSerializer(instance,data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save(role='premium_patient')
+            return Response(serializer.data,status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)

@@ -8,7 +8,8 @@ from core.views import (Register,
                         ListUser,
                         ListAcceptedRequest,
                         ImagePredictionCreateView,
-                        UserPdf)
+                        UserPdf,
+                        PremiumUpgrade)
 
 urlpatterns = [
     path('register',Register.as_view(),name='register'),
@@ -21,5 +22,6 @@ urlpatterns = [
     path('message/admin/<int:pk>/', MessageAdmin.as_view(),name='messages-admin'),
     path('users/registered/',ListUser.as_view(),name='users'),
     path('image/predictor/', ImagePredictionCreateView.as_view(),name='image-predictor'),
-    path('image/pdf-report/', UserPdf.as_view(), name='user-prediction-pdf')
+    path('image/pdf-report/', UserPdf.as_view(), name='user-prediction-pdf'),
+    path('profile/upgrade/', PremiumUpgrade.as_view(), name='upgrade-profile'),
 ]
